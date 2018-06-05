@@ -24,7 +24,7 @@ TO TROUBLESHOOT
 
 exec [EDDSLogging].[eddsdbo].[EnsureRule] 10, 10, NULL, NULL, NULL, '4003839b-b3c1-42c4-a98a-3b1e1e780def', 0, 'Default'
 
-2. Query the logs activity using the query below (newest results will be first)
+2. Query the logging activity using the query below (newest results will be first)
 
 SELECT TOP 100 *
 FROM [EDDSLogging].[eddsdbo].[RelativityLogs]
