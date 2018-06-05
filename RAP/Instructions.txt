@@ -1,0 +1,32 @@
+TO INSTALL
+
+1. Access the admin-level Application Library
+2. Click Upload Application
+3. Choose the RelativityAlert.rap file in the Application File field
+4. Save
+5. Install the application to one or more workspaces
+
+--------------------------------------------------------
+
+TO USE
+
+1. Inside of the workspace, confirm there is a field named Alert on the Document object
+2. Mass-edit your documents to populate this Alert field with the text you would like displayed in the alert
+2a. Example: Create a saved search of documents where Has Hidden Content = Yes.  Mass edit these documents to populate the Alert field with "Document has hidden content.  View using native program."
+3. Add the Alert field to one or more layouts used by reviewers
+3a. The Alert field must be populated with text and present on the active layout
+
+--------------------------------------------------------
+
+TO TROUBLESHOOT
+
+1. Add a logging rule for this application using the query below
+
+exec [EDDSLogging].[eddsdbo].[EnsureRule] 10, 10, NULL, NULL, NULL, '4003839b-b3c1-42c4-a98a-3b1e1e780def', 0, 'Default'
+
+2. Query the logs activity using the query below (newest results will be first)
+
+SELECT TOP 100 *
+FROM [EDDSLogging].[eddsdbo].[RelativityLogs]
+WHERE Properties.value('(/properties/property[@key="Application"])[1]', 'varchar(max)') = '4003839b-b3c1-42c4-a98a-3b1e1e780def'
+ORDER BY ID DESC
