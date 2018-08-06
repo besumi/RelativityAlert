@@ -75,5 +75,18 @@ namespace RelativityAlertPIEH
 
             return false;
         }
+
+        public static string SanitizeAlertText(string rawText)
+        {
+            string sanitized = rawText;
+            sanitized = sanitized.Replace(Environment.NewLine, "\\n");
+            sanitized = sanitized.Replace("<script>alert('", "");
+            sanitized = sanitized.Replace("<script> alert('", "");
+            sanitized = sanitized.Replace("');</script>", "");
+            sanitized = sanitized.Replace("')</script>", "");
+            sanitized = sanitized.Replace("') </script>", "");
+
+            return sanitized;
+        }
     }
 }

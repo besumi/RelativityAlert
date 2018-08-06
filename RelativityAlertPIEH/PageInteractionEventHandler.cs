@@ -56,8 +56,7 @@ namespace RelativityAlertPIEH
 
             if (!this.ActiveArtifact.Fields[_fieldName].Value.IsNull)
             {
-                alertFieldText = this.ActiveArtifact.Fields[_fieldName].Value.Value.ToString();
-                alertFieldText = alertFieldText.Replace(Environment.NewLine, "\\n");
+                alertFieldText = RelativityAlertPIEH.Helper.SanitizeAlertText(this.ActiveArtifact.Fields[_fieldName].Value.Value.ToString());
             }
 
             if (!String.IsNullOrEmpty(alertFieldText))
