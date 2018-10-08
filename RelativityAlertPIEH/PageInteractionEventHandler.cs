@@ -47,8 +47,8 @@ namespace RelativityAlertPIEH
 
             if (!fieldExists)
             {
-                logger.LogVerbose($"Alert NOT fired because { _fieldName } field not present on workspace {{caseArtifactID}}, layout {{layoutArtifactID}}",
-                    currentWorkspaceArtifactID, currentLayoutArtifactID);
+                logger.LogVerbose("Alert NOT fired because {fieldName} field not present on workspace {caseArtifactID}, layout {layoutArtifactID}",
+                    _fieldName, currentWorkspaceArtifactID, currentLayoutArtifactID);
                 return retVal;
             }
 
