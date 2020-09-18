@@ -1,5 +1,11 @@
 # Relativity Alert Changelog
 
+## 2020 Sep 16
+
+* RAP version 0.0.1.6
+	* Compatible with Relativity Forms (Hydro Review Interface)
+	* Removed usage of RSAPI
+
 ## 2018 Aug 6
 
 * RAP version 0.0.1.2

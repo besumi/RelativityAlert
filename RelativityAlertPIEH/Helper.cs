@@ -1,57 +1,40 @@
-﻿using kCura.Relativity.Client;
-using Relativity.API;
+﻿using Relativity.API;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using DTOs = kCura.Relativity.Client.DTOs;
+using System.Threading.Tasks;
 
 namespace RelativityAlertPIEH
 {
     public class Helper
     {
-        public static int GetFieldArtifactID(string name, IRSAPIClient proxy, IAPILog logger)
-        {
-            int currentWorkspaceArtifactID = proxy.APIOptions.WorkspaceID;
+		public async static Task<int> GetFieldArtifactID(string fieldName, IEHHelper helper, IAPILog logger)
+		{
+			int fieldArtifactId = 0;
+			using (IObjectManager objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				var queryRequest = new QueryRequest()
+				{
+					ObjectType = new ObjectTypeRef() { Name = "Field" },
+					Condition = $"'Name' == '{fieldName}' AND 'Object Type' == 'Document'"
+				};
 
-            TextCondition cond1 = new TextCondition("Name", TextConditionEnum.EqualTo, name);
-            WholeNumberCondition cond2 = new WholeNumberCondition("Object Type", NumericConditionEnum.EqualTo, 10);
-            CompositeCondition compCondition = new CompositeCondition(cond1, CompositeConditionEnum.And, cond2);
+				var queryResult = await objectManager.QuerySlimAsync(helper.GetActiveCaseID(), queryRequest, 0, 1);
 
-            DTOs.Query<DTOs.Field> q = new DTOs.Query<DTOs.Field>
-            {
-                Condition = compCondition,
-                Fields = DTOs.FieldValue.AllFields
-            };
+				if (queryResult.TotalCount > 0)
+				{
+					fieldArtifactId = queryResult.Objects.Select(x => x.ArtifactID).FirstOrDefault();
+					logger.LogVerbose("Alert field artifactID: {fieldArtifactID}", fieldArtifactId);
+				}
+			}
 
-            DTOs.QueryResultSet<DTOs.Field> result = new DTOs.QueryResultSet<DTOs.Field>();
+			return fieldArtifactId;
+		}
 
-            try
-            {
-                result = proxy.Repositories.Field.Query(q);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("RSAPI exception on Read() in workspace {caseArtifactID} for field {fieldName}: {exception}",
-                    currentWorkspaceArtifactID, name, ex.Message);
-            }
-
-            if (!result.Success)
-            {
-                logger.LogError("RSAPI Read() Unsuccessful in workspace {caseArtifactID} on field {fieldName}: {message}",
-                    currentWorkspaceArtifactID, name, result.Message);
-                logger.LogError("First RSAPI error in Results: {message}",
-                    result.Results.FirstOrDefault().Message);
-            }
-            else
-            {
-                return result.Results.FirstOrDefault().Artifact.ArtifactID;
-            }
-
-            return 0;
-        }
-
-        public static bool FindFieldOnLayout(IDBContext context, int fieldArtifactID, int layoutArtifactID, IAPILog logger)
+		public static bool FindFieldOnLayout(IDBContext context, int fieldArtifactID, int layoutArtifactID, IAPILog logger)
         {
             string sql =
             @"SELECT COUNT(1)
